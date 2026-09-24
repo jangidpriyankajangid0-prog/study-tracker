@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🚀 Pihu's Full Stack + DSA Mastery Tracker</title> 
+  <link rel="icon" href="goal.jpeg" type="immage/x-icon">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #a78bfa;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 30px;
+    }
+    .overall-progress {
+      background: #1e1e2e;
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 30px;
+      text-align: center;
+      border: 1px solid #2e2e4e;
+    }
+    .overall-progress h2 { color: #a78bfa; margin-bottom: 10px; }
+    .big-bar {
+      background: #2e2e4e;
+      border-radius: 999px;
+      height: 20px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .big-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7c3aed, #a78bfa);
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+    .big-percent { font-size: 1.3rem; font-weight: bold; color: #a78bfa; }
+    .daily-blocks {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+    .daily-card {
+      background: #1e1e2e;
+      border-radius: 12px;
+      padding: 14px 16px;
+      border: 1px solid #2e2e4e;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .daily-card .icon { font-size: 1.4rem; }
+    .daily-card .info { flex: 1; }
+    .daily-card .info div:first-child { font-weight: 600; font-size: 0.85rem; color: #c4b5fd; }
+    .daily-card .info div:last-child { font-size: 0.75rem; color: #666; }
+    .daily-card input[type="checkbox"] { width: 20px; height: 20px; accent-color: #7c3aed; cursor: pointer; }
+    .daily-date {
+      text-align: center;
+      color: #a78bfa;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+    .reset-daily {
+      display: block;
+      margin: 0 auto 30px;
+      background: #2e2e4e;
+      color: #a78bfa;
+      border: 1px solid #4e4e8e;
+      border-radius: 8px;
+      padding: 8px 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .reset-daily:hover { background: #3e3e6e; }
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .phase-card {
+      background: #1e1e2e;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #2e2e4e;
+      transition: border-color 0.3s;
+    }
+    .phase-card.active { border-color: #7c3aed; }
+    .phase-card.done { border-color: #22c55e; background: #1a2e1a; }
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .phase-icon { font-size: 1.5rem; }
+    .phase-title { font-size: 1rem; font-weight: 700; color: #e0e0e0; }
+    .phase-days { font-size: 0.75rem; color: #7c3aed; font-weight: 600; }
+    .phase-milestone {
+      font-size: 0.78rem;
+      color: #888;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+    .phase-bar {
+      background: #2e2e4e;
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .phase-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+    .cat-webdev { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .cat-dsa { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .cat-cs { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+    .cat-java { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .topics-list { list-style: none; }
+    .topics-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #2a2a3e;
+      font-size: 0.82rem;
+      color: #ccc;
+      cursor: pointer;
+    }
+    .topics-list li:last-child { border-bottom: none; }
+    .topics-list li input[type="checkbox"] {
+      margin-top: 2px;
+      min-width: 16px;
+      min-height: 16px;
+      accent-color: #7c3aed;
+      cursor: pointer;
+    }
+    .topics-list li.checked { color: #555; text-decoration: line-through; }
+    .phase-stats {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 8px;
+      text-align: right;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+    .badge-webdev { background: #1d4ed8; color: #bfdbfe; }
+    .badge-dsa { background: #92400e; color: #fde68a; }
+    .badge-cs { background: #4c1d95; color: #ddd6fe; }
+    .badge-java { background: #991b1b; color: #fecaca; }
+    .milestone-banner {
+      background: linear-gradient(135deg, #1a1a2e, #2e1a4e);
+      border: 1px solid #7c3aed;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #c4b5fd;
+      text-align: center;
+      display: none;
+    }
+    .phase-card.done .milestone-banner { display: block; }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #444;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🚀 Pihu's Full Stack + DSA Mastery Tracker</h1>
+<p class="subtitle">One phase at a time. Sequence = Confidence. 💪</p>
+
+<!-- Overall Progress -->
+<div class="overall-progress">
+  <h2>Overall Progress</h2>
+  <div class="big-bar"><div class="big-bar-fill" id="overallBar" style="width:0%"></div></div>
+  <div class="big-percent" id="overallPercent">0%</div>
+  <div style="color:#c7c7d6;font-size:0.8rem;margin-top:4px;" id="overallCount">0 / 0 topics completed</div>
+</div>
+
+<!-- Daily Non-Negotiables -->
+<div class="daily-date" id="todayLabel"></div>
+<div class="daily-blocks" id="dailyBlocks"></div>
+<button class="reset-daily" onclick="resetDaily()">↺ Reset today's daily blocks</button>
+
+<!-- Phase Cards -->
+<div class="phases-grid" id="phasesGrid"></div>
+
+<footer>Saving automatically to your browser. Keep going, Pihu! 🌟</footer>
+
+<script>
+const PHASES = [
+  {
+    id: "p1", icon: "🌐", title: "Phase 1 — HTML", days: "Day 1july–7july", cat: "webdev",
+    milestone: "🏁 Build 2 static web pages from scratch",
+    topics: [
+      "Code your first HTML Program",
+      "Mastering HTML Tags for Web Development",
+      "Emmet, Div Tag Lists and Anchor Tag Variations",
+      "HTML Tables: Rows, Columns and Advanced Attributes",
+      "Forms in HTML",
+      "HTML Forms: From Beginner to Pro",
+      "Project 1: HTML Resume Project",
+      "Project 2: HTML Media Project (Media tags & iframe)",
+      "SEO & Head tag in HTML"
+    ]
+  },
+  {
+    id: "p2", icon: "🎨", title: "Phase 2 — CSS", days: "Day finish on 5 October", cat: "webdev",
+    milestone: "🏁 Build a fully responsive landing page",
+    topics: [ 
+         "Mastering CSS: Inline Internal and External Stylesheets",
+        "CSS Typography: Fonts Colors && Developer tools",
+        "CSS Box Model in 40 minutes",
+        "CSS Display Property in Depth",
+        "Mastering CSS Position Property: Static Relative Absolute Fixed and Sticky",
+        "CSS Size Units in Depth: Unlocking the Power of px % vw vh em and rem",
+        "Mastering CSS Float Clear and Overflow in 20 Minutes",
+        "Complete FLEXBOX in 1 Video",
+        "CSS Media Queries and Custom Variables Explained",
+        "CSS Shadow Effects - Box Shadow && Text Shadow",
+        "Create Engaging Websites with CSS Animations",
+        "Transition Effects in CSS",
+        "Mastering 2D Transforms in CSS",
+        "Creating a Recipe Website Project using CSS",
+        "Creating a Cards Website Project using CSS",
+        "Everything about CSS GRID in ONE Video",
+        "Creating a Blogs Website Project using CSS [Part 1]",
+        "Creating a Blog Project using CSS [Part 2]",
+        "Grid: Auto-Fit MinMax Template Areas Explained",
+        "Mastering CSS 3D Transforms",
+        "StudySync Project: Creating a Navigation Bar",
+        "StudySync Project: Creating a HERO Section",
+        "StudySync Project: Creating a CARDs Section",
+        "StudySync Project: Creating a TESTIMONIAL Section",
+        "StudySync Project: Creating a NEWSLETTER Section",
+        "StudySync Project: Creating a FOOTER Section"
+            ]
+  },
+  {
+    id: "p3", icon: "⚡", title: "Phase 3 — JavaScript", days: "Day 24 september - 20 october ", cat: "webdev",
+    milestone: "🏁 Build a dynamic to-do app with local storage",
+    topics: [  
+        "Starting JavaScript Series 2024",
+        "Variables and DataTypes in JS",
+        "Operators & Conditionals in JavaScript",
+        "Loops and String in JavaScript",
+        "Plain and Arrow Functions in JS",
+        "Reference Types: Objects && Arrays in JS",
+        "Variable/Function Hoisting && Function Calls in JS",
+        "Temporal Dead Zone in JS",
+        "Classes && Default Parameters in Functions",
+        "Common In-Built Objects in JS",
+        "Object Cloning && Garbage Collector in JS",
+        "Error Handling in JS",
+        "JS DOM Manipulation - Access/Insert/Update/Delete elements",
+        "JS DOM Manipulation - styling elements",
+        "All about Events & Listeners in JS",
+        "Performance: Reflow && Repaint in JS",
+        "Learn EVENT LOOP in 1 Shot",
+        "javaScript Promises in 1 Video",
+        "Async-await and Fetch API in JavaScript",
+        "Closures in JavaScript",
+        "LeetCode Metrics App using JavaScript"
+  ]
+  },
+  {
+    id: "p4", icon: "🖥️", title: "Phase 4 — Frontend (React)", days: "Day 21 October - 31 october ", cat: "webdev",
+    milestone: "🏁 Build a multi-page React app with API integration",
+    topics: [
+      "Create your FIRST React App",
+      "Components / Props / JSX",
+      "useState Hook",
+      "Tailwind CSS Basics",
+      "Passing Props as Children and Functions",
+      "State Lifting & Conditional Rendering",
+      "Event Handling",
+      "useEffect Hook in depth",
+      "useContext Hook in depth",
+      "Routing in React",
+      "React Hook Form",
+      "Redux Toolkit",
+      "useRef, useMemo, useCallback",
+      "Project: Notes/Code Saver React App",
+      "Deploy Frontend App on Vercel"
+    ]
+  },
+  {
+    id: "p5", icon: "🔧", title: "Phase 5 — Backend (Node.js + Express)", days: "Day 1 November - 10 November ", cat: "webdev",
+    milestone: "🎉 Build & deploy a full CRUD app",
+    topics: [
+      "Introduction to Backend, Node.js and Express.js",
+      "Request / Response / Testing / Routing",
+      "Code your FIRST Backend App",
+      "Middlewares in Express.js",
+      "Setting up MongoDB (Local + Cloud)",
+      "Connecting MongoDB using Mongoose",
+      "MVC Pattern in a MERN Backend Project"
+    ]
+  },
+  {
+    id: "p6", icon: "🗄️", title: "Phase 6 — DBMS", days: "Day 57–63", cat: "cs",
+    milestone: "🏁 Design & query a database for a real-world use case",
+    topics: [ 
+          "Introduction to DBMS",
+          "What the heck is Database Management System DBMS",
+          "DBMS Architecture || Role of DBA",
+          "ER Model Explained || ER Diagram Notations || DBMS for Placements",
+          "Extended ER Features || Abstraction in ER Model",
+          "How to think and formulate an ER Diagram || Banking System ER Model", 
+          "Designing the ER Model of FACEBOOK Database || DBMS for Placements",
+         "Relational Model Explained || DBMS for Placements",
+          "Transform ER Model to Relational Model || ER-Diagram to Tables",
+          "Complete SQL in 1 VIDEO",
+          "Common SQL Queries for Interviews",
+          "Why We Need Normalisation ? || DBMS Series for Placements",
+          "ACID Properties && Transactions in DBMS",
+          "How to Implement Atomicity and Durability? || DBMS Interview question",
+          "Why Indexing is important in Database Systems || DBMS Interview question",
+          "What are NoSQL Databases || SQL vs NoSQL",
+          "Types of Databases || DBMS for Placements",
+          "What is Clustering / Replication in DBMS || DBMS for Placements",
+          "What is Partitioning and Sharding in DBMS || DB Optimisation",
+          "Database Scaling Patterns | How to perform step by step scaling",
+          "CAP Theorem in DBMS || DBMS for Placements 2022",
+          "Master-Slave Architecture || DBMS for Placements"
+      
+    ]
+  },
+  {
+    id: "p7", icon: "💻", title: "Phase 7 — Operating System", days: "Day 64–70", cat: "cs",
+    milestone: "🏁 Answer OS interview questions without hesitation",
+    topics: [
+      "Intro to OS, Types & Components",
+      "Process States, Context Switching",
+      "CPU Scheduling Algorithms (FCFS, SJF, RR, MLFQ)",
+      "Concurrency: Critical Section, Semaphores, Race Conditions",
+      "Classic Problems: Producer-Consumer, Dining Philosophers",
+      "Deadlock: Conditions, Avoidance, Detection",
+      "Memory Management: Paging & Segmentation",
+      "Virtual Memory, Page Replacement & Thrashing"
+    ]
+  },
+  {
+    id: "p8", icon: "🌐", title: "Phase 8 — Computer Networks", days: "Day 71–77", cat: "cs",
+    milestone: "🏁 Explain how a web request works end-to-end in an interview",
+    topics: [
+        "Difference between http:// and https:// ",
+        "What is API Gateway",
+        "SSL/TLS",
+        "Misc & System Design",
+        "Security",
+        "Reverse Proxy",
+        "Load Balancer",
+        "ARP. Address Resolution Protocol",
+        "Horizontal vs Vertical Scaling",
+        "Caching & How does a website is cached",
+        "what is VIP in computer networks",
+        "REST API vs HTTP API",
+        "what is a Container in computer networks",
+        "Containerisation vs Virtualisation",
+        "Performance vs Scalability",
+        "Latency vs Throughput",
+        "2G vs 3G vs 4G vs 5G",
+        "How a VPN works",
+        "Gateway vs Router",
+        "NIC and MAC Address",
+        "Public vs Private IP Address",
+        "What is Multiplexing",
+        "Modem vs Router",
+        "How Bluetooth works",
+        "How Hotspot works",
+        "how Email works co",
+        "How file transfer works",
+        "how ATM works"
+    ]
+  },
+  {
+    id: "p9", icon: "🧩", title: "Phase 9 — OOPs", days: "Day 78–82", cat: "cs",
+    milestone: "🏁 Implement 5 OOPs problems from scratch with explanations",
+    topics: [  
+        "Intro to OOPs",
+        "Creating Objects in C++",
+        "What is Encapsulation",
+        "Encapsulation Implementation in C++",
+        "What is Inheritance",
+        "Inheritance Implementation in C++",
+        "What is Polymorphism",
+        "What is Abstraction"
+    ]
+  },
+  {
+    id: "p10", icon: "🧠", title: "Phase 10 — DSA (Java Foundations )", days: "Day 83–89", cat: "dsa",
+    milestone: "🏁 Get comfortable writing Java code for DSA",
+    topics: [
+      "Flowchart & Pseudocode + Basics",
+        "How a Java Program Run",
+        "IDE Setup for Coding",
+        "Write your FIRST Java Program",
+        "VARIABLES in Java",
+        "DataTypes in Java",
+        "Operators in Java",
+        "Input/Output in Java",
+        "Conditionals in Java",
+        "Loops in Java",
+        "Solve any PATTERN Printing Problem using this TRICK",
+        "Methods in Java",
+        "Arrays in Java",
+        "Strings in Java",
+        "Basic Maths needed for DSA",
+        "Decimal Number & Binary Number",
+        "Bitwise Operators in Java"
+            ]
+  },
+  {
+    id: "p11", icon: "🎯", title: "Phase 11 —  DSA Practice Problems: Beginner", days: "Day 90–96", cat: "dsa",
+    milestone: "🏁 Build confidence solving easy problems independently",
+    topics: [
+          "practice"
+    ]
+  },
+  {
+    id: "p12", icon: "🔺", title: "Phase 12 — DSA Practice Problems: Pattern", days: "Day 97–101", cat: "dsa",
+    milestone: "🏁 Solve any pattern-printing problem confidently",
+    topics: [
+      "practice",
+    ]
+  },
+  {
+    id: "p13", icon: "🧮", title: "Phase 13 — Maths Practice Problems", days: "Day 102–104", cat: "java",
+    milestone: "🏁 Master core math techniques used in coding interviews",
+    topics: [
+      "Topics",    
+      "practice"
+    ]
+  },
+  {
+    id: "p14", icon: "🧩", title: "Phase 14 — OOPs Concepts in Java", days: "Day 105–107", cat: "java",
+    milestone: "🏁 Apply Java-specific OOP features confidently",
+    topics: [
+      "Intro to OOPs Concepts",
+      "Classes, Objects, Constructors, Object Lifecycle in JAVA",
+      "Encapsulation in JAVA",
+      "Inheritance in Java",
+      "Polymorphism in Java",
+      "Abstraction in Java"
+    ]
+  },
+  {
+    id: "p15", icon: "📦", title: "Phase 15 — Java Collection Framework", days: "Day 108–110", cat: "java",
+    milestone: "🏁 Choose the right collection for the right problem",
+    topics: [
+      "Java Collection Framework ( Part-1 )",
+      "Java Collection Framework ( Part-2)",
+      "Java Collection Framework ( Part-3 )"
+    ]
+  },
+  {
+    id: "p16", icon: "🧱", title: "Phase 16 — Array Concept ", days: "Day 111–115", cat: "java",
+    milestone: "🏁 Build strong array fundamentals in Java",
+    topics: [
+        "Arrays in Java",
+        "Find the average of array elemets",
+        "Multiply each element of array by 10",
+        "Search for an element in an Array (Linear Search)",
+        "Find the maximum element in an array",
+        "Return Sum of +ve and -ve number",
+        "Count the number of Zeros and Ones",
+        "Find first Unsorted Element in Array",
+        "Reverse an Array",
+        "Shift array elements by 1 Position",
+        "Print Extreme Elements in an alternate manner",
+        "Identify elements with Highest and Lowest frequency",
+        "Find the mode of the array",
+        "Sorting an Array of 0s and 1s",
+        "Missing Number",
+        "Find the Unique Element in an Array",
+        "Two Sum",
+        "Three Sum",
+        "Remove Duplicates From Sorted Array",
+        "Find first repeating element",
+        "Find Pivot Index",
+        "Missing Elements from an array with duplicates",
+        "Maximum Sum Contiguous SubArray (Kadane's Algorithm)",
+        "Print the sum of each row in a 2D Array",
+        "Print the sum of each column in a 2D array",
+        "Wave Print a matrix",
+        "Transpose of a Matrix",
+        "Rotate Image",
+        "Spiral Print a matrix"
+    ]
+  },
+  {
+    id: "p17", icon: "🏹", title: "Phase 17 — Practice Problems in Arrays", days: "Day 116–120", cat: "dsa",
+    milestone: "🏁 Solve medium-level array problems independently",
+    topics: [
+      "practice"
+    ]
+  },
+  {
+    id: "p18", icon: "🔃", title: "Phase 18 — Sorting Algorithms", days: "Day 121–124", cat: "dsa",
+    milestone: "🏁 Implement every major sorting algorithm from scratch",
+    topics: [ 
+        "Selection Sort in C++",
+        "Bubble Sort in C++",
+        "Insertion Sort in C++"
+    ]
+  },
+  {
+    id: "p19", icon: "🔍", title: "Phase 19 — Binary Search", days: "Day 125–127", cat: "dsa",
+    milestone: "🏁 Recognize and solve any binary search variant",
+    topics: [
+        "Intro to Binary Search",
+        "Upper/Lower Bound, Number of Occurrences Binary Search",
+        "Find PEAK of MOUNTAIN Array",
+        "Search in a Rotated Sorted Array",
+        "Binary Search on Answers PATTERN",
+       "Book Allocation Problem",
+        "Painter's Partition Problem",
+        "Aggressive Cows Problem",
+        "EKO SPOJ Problem",
+        "ROTI PRATA SPOJ Problem",
+        "Search in Nearly Sorted Array",
+        "Find Single Non-Duplicate element using Binary Search",
+        "Search in 2D Matrix I and II",
+        "Row with Maximum 1's",
+        "Unbounded Search using Binary Search Concept"
+            ]
+  },
+  {
+    id: "p20", icon: "🔤", title: "Phase 20 — Let's Learn String", days: "Day 128–131", cat: "dsa",
+    milestone: "🏁 Solve classic string manipulation problems",
+    topics: [
+        "Strings in Java",
+        "Reverse Words in a Strings",
+        "Remove All Occurrence of a String",
+        "Permutation in String",
+        "Remove All Adjacent Duplicates in String",
+        "String Compression"
+    ]
+  },
+  {
+    id: "p21", icon: "🔁", title: "Phase 21 — Let's Learn Recursion", days: "Day 132–135", cat: "dsa",
+    milestone: "🏁 Think recursively without getting stuck",
+    topics: [
+      "Recursion Basics",
+      "Recursive Time & Space Complexity",
+      "Climbing Stairs problem",
+      "Recursion Basics Questions",
+      "Recursive BINARY SEARCH"
+    ]
+  },
+  {
+    id: "p22", icon: "🧭", title: "Phase 22 — DnC and Backtracking", days: "Day 136–139", cat: "dsa",
+    milestone: "🏁 Solve backtracking problems with a clear template",
+    topics: [
+      "practice"
+    ]
+  },
+  {
+    id: "p23", icon: "🔗", title: "Phase 23 — Master Linked Lists", days: "Day 140–143", cat: "dsa",
+    milestone: "🏁 Manipulate any linked list variant confidently",
+    topics: [
+      "practice"
+    ]
+  },
+  {
+    id: "p24", icon: "📚", title: "Phase 24 — Master Stacks", days: "Day 144–146", cat: "dsa",
+    milestone: "🏁 Recognize stack-based problem patterns instantly",
+    topics: [
+      "practice"
+    ]
+  },
+  {
+    id: "p25", icon: "🚶", title: "Phase 25 — Master Queues", days: "Day 147–149", cat: "dsa",
+    milestone: "🏁 Apply queues, circular queues & deques correctly",
+    topics: [
+      "Practice"
+    ]
+  },
+  {
+    id: "p26", icon: "🌳", title: "Phase 26 — Master Trees", days: "Day 150–154", cat: "dsa",
+    milestone: "🏁 Traverse and manipulate any binary tree",
+    topics: [
+      "Practice"
+    ]
+  },
+  {
+    id: "p27", icon: "🌲", title: "Phase 27 — Master BST", days: "Day 155–157", cat: "dsa",
+    milestone: "🏁 Solve BST-specific interview problems",
+    topics: [
+      "Practice"
+    ]
+  },
+  {
+    id: "p28", icon: "⛰️", title: "Phase 28 — Master Heaps", days: "Day 158–160", cat: "dsa",
+    milestone: "🏁 Use heaps for top-K and priority problems",
+    topics: [
+      "practice"
+    ]
+  },
+  {
+    id: "p29", icon: "🌴", title: "Phase 29 — Master Tries", days: "Day 161–163", cat: "dsa",
+    milestone: "🏁 Apply tries for prefix & word search problems",
+    topics: [
+      "Practice"
+    ]
+  },
+  {
+    id: "p30", icon: "🧬", title: "Phase 30 — Master DP", days: "Day 164–169", cat: "dsa",
+    milestone: "🏁 Identify and solve DP problems using clear patterns",
+    topics: [
+      "Practice"
+    ]
+  },
+  {
+    id: "p31", icon: "🕸️", title: "Phase 31 — Master Graphs", days: "Day 170–175", cat: "dsa",
+    milestone: "🚀 GRAPH READY — Tackle any graph problem in interviews",
+    topics: [
+      "Practice"
+    ]
+  }
+];
+
+const DAILY = [
+  { id: "d1", icon: "📚", label: "Total covered targets", sub: "Follow sequence" },
+  { id: "d3", icon: "🎤", label: "English Fluency (Gemini)", sub: "30 minutes· Speak + get feedback" },
+  { id: "d4", icon: "🧑‍💼", label: "Interview", sub: "1 hr · HR + Technical mock" },
+  { id: "d5", icon: " 🧠",label: "Aptitudes", sub: "1 hour" }
+];
+
+const CAT_BAR = { webdev: "cat-webdev", dsa: "cat-dsa", cs: "cat-cs", java: "cat-java" };
+const CAT_BADGE = { webdev: "badge-webdev", dsa: "badge-dsa", cs: "badge-cs", java: "badge-java" };
+const CAT_LABEL = { webdev: "Web Dev", dsa: "DSA", cs: "CS Fundamentals", java: "Java" };
+
+function getTodayKey() { return new Date().toISOString().split("T")[0]; }
+
+function loadState() {
+  return JSON.parse(localStorage.getItem("pihu_tracker") || "{}");
+}
+function saveState(state) {
+  localStorage.setItem("pihu_tracker", JSON.stringify(state));
+}
+
+function renderDaily() {
+  const today = getTodayKey();
+  const state = loadState();
+  const dailyState = state.daily || {};
+  const todayData = dailyState[today] || {};
+
+  document.getElementById("todayLabel").textContent = "📅 Today — " + new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+  const container = document.getElementById("dailyBlocks");
+  container.innerHTML = "";
+  DAILY.forEach(d => {
+    const checked = !!todayData[d.id];
+    const div = document.createElement("div");
+    div.className = "daily-card";
+    div.innerHTML = `<div class="icon">${d.icon}</div><div class="info"><div>${d.label}</div><div>${d.sub}</div></div><input type="checkbox" ${checked ? "checked" : ""} onchange="toggleDaily('${d.id}', this.checked)">`;
+    container.appendChild(div);
+  });
+}
+
+function toggleDaily(id, val) {
+  const today = getTodayKey();
+  const state = loadState();
+  if (!state.daily) state.daily = {};
+  if (!state.daily[today]) state.daily[today] = {};
+  state.daily[today][id] = val;
+  saveState(state);
+}
+
+function resetDaily() {
+  const today = getTodayKey();
+  const state = loadState();
+  if (state.daily) state.daily[today] = {};
+  saveState(state);
+  renderDaily();
+}
+
+function renderPhases() {
+  const state = loadState();
+  const topics = state.topics || {};
+  const container = document.getElementById("phasesGrid");
+  container.innerHTML = "";
+
+  let totalTopics = 0, completedTopics = 0;
+
+  PHASES.forEach(phase => {
+    const phaseTopics = topics[phase.id] || {};
+    const total = phase.topics.length;
+    const done = phase.topics.filter((_, i) => phaseTopics[i]).length;
+    totalTopics += total;
+    completedTopics += done;
+    const pct = Math.round((done / total) * 100);
+    const isDone = done === total;
+
+    const card = document.createElement("div");
+    card.className = `phase-card ${isDone ? "done" : done > 0 ? "active" : ""}`;
+
+    const topicsHTML = phase.topics.map((t, i) => {
+      const checked = !!phaseTopics[i];
+      return `<li class="${checked ? "checked" : ""}" onclick="toggleTopic('${phase.id}', ${i})">
+        <input type="checkbox" ${checked ? "checked" : ""} onclick="event.stopPropagation(); toggleTopic('${phase.id}', ${i})">
+        ${t}
+      </li>`;
+    }).join("");
+
+    card.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-icon">${phase.icon}</span>
+        <div>
+          <div class="phase-title">${phase.title} <span class="badge ${CAT_BADGE[phase.cat]}">${CAT_LABEL[phase.cat]}</span></div>
+          <div class="phase-days">${phase.days} · ${phase.topics.length} topics</div>
+        </div>
+      </div>
+      <div class="phase-milestone">${phase.milestone}</div>
+      <div class="phase-bar"><div class="phase-bar-fill ${CAT_BAR[phase.cat]}" style="width:${pct}%"></div></div>
+      <ul class="topics-list">${topicsHTML}</ul>
+      <div class="phase-stats">${done} / ${total} completed · ${pct}%</div>
+      <div class="milestone-banner">🎉 Phase Complete! ${phase.milestone}</div>
+    `;
+    container.appendChild(card);
+  });
+
+  const overallPct = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+  document.getElementById("overallBar").style.width = overallPct + "%";
+  document.getElementById("overallPercent").textContent = overallPct + "%";
+  document.getElementById("overallCount").textContent = completedTopics + " / " + totalTopics + " topics completed";
+}
+
+function toggleTopic(phaseId, idx) {
+  const state = loadState();
+  if (!state.topics) state.topics = {};
+  if (!state.topics[phaseId]) state.topics[phaseId] = {};
+  state.topics[phaseId][idx] = !state.topics[phaseId][idx];
+  saveState(state);
+  renderPhases();
+}
+
+renderDaily();
+renderPhases();
+</script>
+</body>
+</html>
